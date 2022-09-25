@@ -4,11 +4,14 @@
 IBusBM ibus;                          // Create iBus Object
 mecanumTh9x car;                      // Create mecanumTh9x Object
 
-  volatile int CH0=0;                 // Leftshift - Rightshift
-  volatile int spd=0;                 // Speed (Acceleration)
-  volatile int CH2=0;                 // Forward - Reverse
-  volatile int CH3=0;                 // leftTurn - rightTurn 
-  volatile int CH5=0;                 //Switch mode
+  int CH0=0;                          // Leftshift - Rightshift
+  int spd=0;                          // Speed (Acceleration)
+  int CH2=0;                          // Forward - Reverse
+  int CH3=0;                          // leftTurn - rightTurn 
+  //boolean CH4 = false;              // Extra
+  bool CH5 = false;                   //turn switch
+  //int CH6 = -100;                   //extra pot
+  //int CH7 = -100;                   //extra pot
   
 void setup()
 {
@@ -19,7 +22,7 @@ void setup()
 
 }
 
-//Function to read the channel value
+  //Function to read the channel value
   int readChannel(byte channelInput, int minLimit, int maxLimit, int defaultValue)
   {
     uint16_t ch = ibus.readChannel(channelInput);
@@ -40,17 +43,17 @@ void loop()
 {
   // Get RC channel values
   CH0 = readChannel(0, -255, 255, 0);         // Leftshift - Rightshift
-  spd = readChannel(1, 0, 255, 0);           // Speed (Acceleration)
+  spd = readChannel(1, 0, 255, 0);            // Speed (Acceleration)
   CH2 = readChannel(2, -255, 255, 0);         // Forward - Reverse
   CH3 = readChannel(3, -255, 255, 0);         // LeftTurn - RightTurn 
   CH5 = readSwitch(5, false);                 // CH5 Switch mode
 
-  if(CH2 > 10)
+  if(CH2 > 25)
   {
     car.Speed = (float)(spd*CH2)/255;
     car.front();
   }
-  else if(CH2 < -10)
+  else if(CH2 < -25)
   {
     car.Speed = abs((float)(spd*CH2)/255);
     //car.Speed = abs(spd);
@@ -69,12 +72,12 @@ void loop()
     car.leftShift();
   }
   */
-  if(CH3 > 10 && CH5 == 0)
+  if(CH3 > 25 && CH5 == 0)
   {
     car.Speed = (float)(spd*CH3)/255;
     car.rightTurn();
   }
-  else if(CH3 < -10 && CH5 == 0)
+  else if(CH3 < -25 && CH5 == 0)
   {
     car.Speed = abs((float)(spd*CH3)/255);
     //car.Speed = abs(spd);
@@ -86,7 +89,7 @@ void loop()
     car.Speed = (float)(spd*CH3)/255;
     car.rightBackPivot();
   }
-  else if(CH2 < -10)
+  else if(CH2 < -25)
   {
     car.Speed = abs((float)(spd*CH3)/255);
     //spd = abs(spd);
